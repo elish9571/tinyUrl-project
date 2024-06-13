@@ -52,6 +52,29 @@ const LinkController = {
       res.status(400).json({ message: e.message });
     }
   },
+   getClicksReport : async (req, res) => {
+    const linkId = req.params.id;
+    try {
+        const link = await Link.findById(linkId);
+        if (!link) {
+            return res.status(404).send('Link not found');
+        }
+
+        const report = {};
+
+        link.clicks.forEach(click => {
+            const target = click.targetParamValue || 'unknown';
+            if (!report[target]) {
+                report[target] = 0;
+            }
+            report[target]++;
+        });
+
+        res.json(report);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+}
 };
 
 export default LinkController;
